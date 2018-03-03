@@ -1,130 +1,126 @@
-const path = require('path')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const path = require('path');
+const webpack = require('webpack');
 
-// variable d'environnement permettant de définir si l'on est en dev ou prod
-const dev = process.env.NODE_ENV === 'dev'
-
-// extraction du css en assets
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 var StyleLintPlugin = require('stylelint-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const DEV = process.env.NODE_ENV === 'dev';
 
 // config css
 let cssLoaders = [
-  { loader: 'css-loader', options: { importLoaders: 1, minimize: !dev } }
-]
+  {
+    loader: 'css-loader',
+    options: {
+      importLoaders: 1,
+      minimize: !DEV
+    }
+  }
+];
 
-// on enregistre la config dans une variable pour pouvoir la modifier si besoin
 let config = {
-
-  // point d'entrée
   entry: {
     // servira de nommage pour le css
     // par défaut main.css
-    app: ['./assets/styles/app.scss', './assets/scripts/app.js']
+    app: ['./app/styles/app.scss', './app/scripts/app.js']
   },
 
-  // fichier de sortie
   output: {
-    // absolute path !!
     path: path.resolve('./dist'),
     // récupère le nom donné en entrée, par défaut bundle.js
-    filename: dev ? '[name].js' : '[name].[chunkhash].js',
+    filename: DEV ? '[name].js' : '[name].[chunkhash].js',
     publicPath: 'dist/'
   },
 
   resolve: {
     alias: {
-      '@css': path.resolve('./assets/styles/'),
-      '@js': path.resolve('./assets/scripts/')
+      '@css': path.resolve('./app/styles/'),
+      '@js': path.resolve('./app/scripts/')
     }
   },
 
-  // lance le watch uniquement en mode dev
-  watch: dev,
-
   // loaders
   module: {
-    rules: [{
-      enforce: 'pre',
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
-      use: ['eslint-loader']
-    },
-    {
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
-      use: ['babel-loader']
-    },
-    {
-      test: /\.css$/,
-      exclude: /(node_modules|bower_components)/,
-      // loader de droite chargé en premier !!
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: cssLoaders
-      })
-    },
-    {
-      test: /\.scss$/,
-      exclude: /(node_modules|bower_components)/,
-      // loader de droite chargé en premier !!
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: [...cssLoaders, 'sass-loader']
-      })
-    },
-    {
-      test: /\.(woff2?|eot|ttf|otf|wav)(\?.*)?$/,
-      loader: 'file-loader'
-    },
-    {
-      test: /\.(png|jpg|gif|svg)$/,
-      use: [{
-        loader: 'url-loader',
-        options: {
-          name: '[name].[hash:7].[ext]',
-          limit: 8192
-        }
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: ['eslint-loader']
       },
       {
-        loader: 'img-loader',
-        options: {
-          enabled: !dev
-        }
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: ['babel-loader']
+      },
+      {
+        test: /\.css$/,
+        exclude: /(node_modules)/,
+        // loader de droite chargé en premier !!
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: cssLoaders
+        })
+      },
+      {
+        test: /\.scss$/,
+        exclude: /(node_modules)/,
+        // loader de droite chargé en premier !!
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [...cssLoaders, 'sass-loader']
+        })
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf|wav)(\?.*)?$/,
+        loader: 'file-loader'
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              name: '[name].[hash:7].[ext]',
+              limit: 8192
+            }
+          },
+          {
+            loader: 'img-loader',
+            options: {
+              enabled: !DEV
+            }
+          }
+        ]
+      },
+      {
+        test: /\.pug$/,
+        // include: path.join(__dirname, 'app'),
+        use: ['pug-loader']
       }
-      ]
-    },
-    {
-      test: /\.pug$/,
-      // include: path.join(__dirname, 'assets'),
-      use: ['pug-loader']
-    }
     ]
   },
 
   // plugins
   plugins: [
     new ExtractTextPlugin({
-      filename: dev ? '[name].css' : '[name].[contenthash:8].css',
-      disable: dev
+      filename: DEV ? '[name].css' : '[name].[contenthash:8].css',
+      disable: DEV
     }),
     new HtmlWebpackPlugin({
       inject   : true,
-      template: './assets/views/index.pug'
+      template: './app/views/index.pug'
     }),
     new StyleLintPlugin()
   ],
 
-  // devtools : source map
-  // premier cas, uniquement en mode dev
-  //  devtool: dev ? "cheap-module-eval-source-map" : false
-  // deuxième cas : en mode dev & prod, à combiner avec l'option sourceMap du module uglify
-  // sinon il vire les commentaires du source-map
-  devtool: dev ? 'cheap-module-eval-source-map' : 'source-map',
+  watch: DEV,
+
+  devtool: DEV ? 'cheap-module-eval-source-map' : 'source-map',
+  
   devServer: {
     // affiche les erreurs en overlay dans le navigateur
     overlay: true,
@@ -134,7 +130,7 @@ let config = {
 }
 
 // prod : minification
-if (!dev) {
+if (!DEV) {
   config.plugins.push(...[
     new UglifyJSPlugin({
       // si l'on veut les source map en prod
@@ -158,7 +154,8 @@ if (!dev) {
       ]
     }
   })
-} else {
+}
+else {
   config.plugins.push(...[
     new webpack.HotModuleReplacementPlugin({
       // Options...
