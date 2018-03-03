@@ -100,8 +100,9 @@ let config = {
     },
     {
       test: /\.pug$/,
-      use: ['pug-html-loader']
-    },    
+      // include: path.join(__dirname, 'assets'),
+      use: ['pug-loader']
+    }
     ]
   },
 
@@ -112,6 +113,7 @@ let config = {
       disable: dev
     }),
     new HtmlWebpackPlugin({
+      inject   : true,
       template: './assets/views/index.pug'
     }),
     new StyleLintPlugin()
