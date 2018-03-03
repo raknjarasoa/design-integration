@@ -1,6 +1,19 @@
-$background: #0ff;
+// SETTINGS
+@import 'settings/settings.colors.scss';
 
-body {
-	margin: 10;
-	background: $background url(./logolord.png);
-}
+// UTILITIES
+@import 'utilities/mixins';
+@import 'utilities/print';
+
+// BASE
+@import 'base/fonts';
+@import 'base/generic';
+@import 'base/headings';
+@import 'base/typography';
+@import 'base/lists';
+
+// COMPONENTS
+
+// VENDORS
+@import 'vendors/slick';
+

@@ -100,7 +100,7 @@ let config = {
     },
     {
       test: /\.pug$/,
-      use: ['pug-loader']
+      use: ['pug-html-loader']
     },    
     ]
   },
