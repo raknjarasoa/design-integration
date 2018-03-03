@@ -1,0 +1,19 @@
+
+a {
+
+  &:hover {
+
+  }
+  &:active {
+
+  }
+  &.disabled {
+
+  }
+  &[href^='javascript:']:after,
+  &[href^='#']:after {
+    @include breakpoint(print) {
+      content: '';
+    }
+  }
+}
