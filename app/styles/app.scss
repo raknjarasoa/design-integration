@@ -17,3 +17,13 @@
 // VENDORS
 @import 'vendors/slick';
 
+.test {
+	display: flex;
+	align-items: center;
+}
+
+@keyframes test {
+	from {
+		transform: skewX(10px)
+	}
+}
