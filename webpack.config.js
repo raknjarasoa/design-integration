@@ -1,16 +1,19 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const CONFS = require('./webpack.config.json');
 
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-var StyleLintPlugin = require('stylelint-webpack-plugin');
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const DEV = process.env.NODE_ENV === 'dev';
 
-// config css
+const pugs = fs.readdirSync(path.resolve(CONFS.PUG_SRC)).map((p) => CONFS.PUG_SRC + path.sep + p );
+
 let cssLoaders = [
   {
     loader: 'css-loader',
@@ -21,18 +24,33 @@ let cssLoaders = [
   }
 ];
 
+if (!DEV) {
+  cssLoaders.push({
+    loader: 'postcss-loader',
+    options: {
+      plugins: (loader) => [
+        require('autoprefixer')({
+          // options telles que les navigateurs à supporter
+        })
+      ]
+    }
+  });  
+}
+
 let config = {
   entry: {
-    // servira de nommage pour le css
-    // par défaut main.css
-    app: ['./app/styles/app.scss', './app/scripts/app.js']
+    app: [
+      CONFS.SCSS_SRC,
+      CONFS.JS_SRC,
+      ...pugs
+    ]
   },
 
   output: {
-    path: path.resolve('./dist'),
+    path: path.resolve(CONFS.BUILD_TARGET),
     // récupère le nom donné en entrée, par défaut bundle.js
     filename: DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: 'dist/'
+    publicPath: CONFS.BUILD_TARGET
   },
 
   resolve: {
@@ -42,7 +60,6 @@ let config = {
     }
   },
 
-  // loaders
   module: {
     rules: [
       {
@@ -51,6 +68,13 @@ let config = {
         exclude: /(node_modules|bower_components)/,
         use: ['eslint-loader']
       },
+      {
+        enforce: "pre",
+        test: /\.(pug|jade)$/,
+        exclude: /node_modules/,
+        loader: "pug-lint-loader",
+        options: require('./.pug-lintrc.js')
+      },      
       {
         test: /\.js$/,
         exclude: /(node_modules)/,
@@ -68,7 +92,6 @@ let config = {
       {
         test: /\.scss$/,
         exclude: /(node_modules)/,
-        // loader de droite chargé en premier !!
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
           use: [...cssLoaders, 'sass-loader']
@@ -98,8 +121,12 @@ let config = {
       },
       {
         test: /\.pug$/,
-        // include: path.join(__dirname, 'app'),
         use: ['pug-loader']
+      },
+      {
+        test: /\.pug$/,
+        include: path.join(__dirname, 'app/views/pages'),
+        use: ['file-loader?name=[path][name].html', 'pug-html-loader?pretty&exports=false']
       }
     ]
   },
@@ -124,7 +151,7 @@ let config = {
   devServer: {
     // affiche les erreurs en overlay dans le navigateur
     overlay: true,
-    contentBase: path.resolve('./dist')
+    contentBase: path.resolve(CONFS.BUILD_TARGET)
   }
 
 }
@@ -137,23 +164,12 @@ if (!DEV) {
       sourceMap: true
     }),
     new ManifestPlugin(),
-    new CleanWebpackPlugin(['dist'], {
+    new CleanWebpackPlugin([CONFS.BUILD_TARGET], {
       root: path.resolve('./'),
       verbose: true,
       dry: false
     })
-  ])
-
-  cssLoaders.push({
-    loader: 'postcss-loader',
-    options: {
-      plugins: (loader) => [
-        require('autoprefixer')({
-          // options telles que les navigateurs à supporter
-        })
-      ]
-    }
-  })
+  ]);
 }
 else {
   config.plugins.push(...[

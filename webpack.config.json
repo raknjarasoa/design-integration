@@ -1,0 +1,6 @@
+{
+  "BUILD_TARGET": "./dist",
+  "PUG_SRC": "./app/views/pages/",
+  "SCSS_SRC": "./app/styles/app.scss",
+  "JS_SRC": "./app/scripts/app.js"
+}
