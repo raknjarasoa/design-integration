@@ -138,21 +138,26 @@ let config = {
   devtool: DEV ? 'cheap-module-eval-source-map' : 'source-map',
   
   devServer: {
-    contentBase: path.resolve('/'),
+    contentBase: path.join(__dirname, 'dist'),
     overlay: {
       warnings: false,
       errors: true
     },
     open: true,
-    // https: true,
+    https: true,
+    compress: true,
+    progress: true,
     port: 3000,
     hot: true,
     watchContentBase: true, // File changes will trigger a full page reload.
-    /*setup(app){
-      app.get('/some/path', function(req, res) {
-        res.json({ custom: 'response' });
-      });
-    }*/
+
+    headers: {
+      "X-Custom-Foo": "bar"
+    },
+
+    before(app) {
+      require('./app/routes')(app);
+    }
   },
 
   entry: {
