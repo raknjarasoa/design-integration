@@ -13,7 +13,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DEV = process.env.NODE_ENV === 'dev';
 
 const pugs = fs.readdirSync(path.resolve(CONFS.PUG_SRC)).map((p) => CONFS.PUG_SRC + p );
-console.log(pugs);
 
 let cssLoaders = [
   {
@@ -31,7 +30,7 @@ if (!DEV) {
     options: {
       plugins: (loader) => [
         require('autoprefixer')({
-          // options telles que les navigateurs à supporter
+          env: 'production'
         })
       ]
     }
@@ -39,24 +38,6 @@ if (!DEV) {
 }
 
 let config = {
-  entry: {
-    index: './app/views/index.pug',
-    app: [
-      CONFS.SCSS_SRC,
-      CONFS.JS_SRC,
-      ...pugs
-    ],
-    // vendor: []
-  },
-
-  output: {
-    path: path.resolve(CONFS.BUILD_TARGET),
-    // récupère le nom donné en entrée, par défaut bundle.js
-    filename: DEV ? '[name].js' : '[name].[chunkhash].js',
-    // To-do: change to serve index.html
-    // publicPath: 'dist/'
-  },  
-
   resolve: {
     alias: {
       '@css': path.resolve('./app/styles/'),
@@ -172,11 +153,26 @@ let config = {
         res.json({ custom: 'response' });
       });
     }*/
-  }
+  },
+
+  entry: {
+    index: './app/views/index.pug',
+    app: [
+      CONFS.SCSS_SRC,
+      CONFS.JS_SRC,
+      ...pugs
+    ],
+    // vendor: []
+  },
+
+  output: {
+    path: path.resolve(CONFS.BUILD_TARGET),
+    filename: DEV ? '[name].js' : '[name].[chunkhash].js',
+    publicPath: '/'
+  }  
 
 }
 
-// prod : minification
 if (!DEV) {
   config.plugins.push(...[
     new UglifyJSPlugin({
