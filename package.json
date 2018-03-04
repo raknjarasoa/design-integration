@@ -34,6 +34,7 @@
         "postcss-loader": "^2.0.6",
         "pug": "^2.0.0-rc.4",
         "pug-html-loader": "^1.1.5",
+        "pug-lint-loader": "0.0.4",
         "pug-loader": "^2.3.0",
         "sass-loader": "^6.0.6",
         "style-loader": "^0.18.2",
