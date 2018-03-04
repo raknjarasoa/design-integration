@@ -49,5 +49,16 @@
     },
     "dependencies": {
         "jquery": "^3.2.1"
+    },
+
+    "browserslist": {
+        "production": [
+            "> 1%",
+            "last 2 version",
+            "ie 9"
+        ],
+        "dev": [
+            "last 1 version"
+        ]
     }
 }
