@@ -1,12 +1,6 @@
 let instance = null;
 
-/**
- *
- *
- * @class UserStore
- */
 class UserStore {
-
   constructor () {
     if (!instance) {
       instance = this;
@@ -15,9 +9,6 @@ class UserStore {
 
     return instance;
   }
-
- // rest is the same code as preceding example
-
 }
 
 const Instance = new UserStore();

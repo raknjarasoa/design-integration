@@ -50,7 +50,8 @@ let config = {
     path: path.resolve(CONFS.BUILD_TARGET),
     // récupère le nom donné en entrée, par défaut bundle.js
     filename: DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: CONFS.BUILD_TARGET
+    // To-do publicPath: CONFS.BUILD_TARGET
+    publicPath: './'
   },
 
   resolve: {
@@ -149,9 +150,21 @@ let config = {
   devtool: DEV ? 'cheap-module-eval-source-map' : 'source-map',
   
   devServer: {
+    contentBase: path.resolve('dist'),
     // affiche les erreurs en overlay dans le navigateur
-    overlay: true,
-    contentBase: path.resolve(CONFS.BUILD_TARGET)
+    overlay: {
+      warnings: true,
+      errors: true
+    },
+    open: true,
+    // https: true,
+    port: 3000,
+    watchContentBase: true, // File changes will trigger a full page reload.
+    /*setup(app){
+      app.get('/some/path', function(req, res) {
+        res.json({ custom: 'response' });
+      });
+    }*/
   }
 
 }
