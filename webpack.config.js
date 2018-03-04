@@ -12,7 +12,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const DEV = process.env.NODE_ENV === 'dev';
 
-const pugs = fs.readdirSync(path.resolve(CONFS.PUG_SRC)).map((p) => CONFS.PUG_SRC + path.sep + p );
+const pugs = fs.readdirSync(path.resolve(CONFS.PUG_SRC)).map((p) => CONFS.PUG_SRC + p );
+console.log(pugs);
 
 let cssLoaders = [
   {
@@ -50,7 +51,8 @@ let config = {
     path: path.resolve(CONFS.BUILD_TARGET),
     // récupère le nom donné en entrée, par défaut bundle.js
     filename: DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: 'dist/'
+    // To-do: change to serve index.html
+    // publicPath: 'dist/'
   },  
 
   resolve: {
@@ -119,6 +121,7 @@ let config = {
           }
         ]
       },
+      // html-loader
       {
         test: /\.pug$/,
         use: ['pug-loader']
@@ -138,9 +141,9 @@ let config = {
       disable: DEV
     }),
     new HtmlWebpackPlugin({
-      // To-do: Comment to serve index.html
-      /*inject   : true,
-      template: './app/views/index.pug'*/
+      inject   : true,
+      title: 'index.html',
+      template: './app/views/index.pug'
     }),
     new StyleLintPlugin()
   ],
@@ -150,7 +153,7 @@ let config = {
   devtool: DEV ? 'cheap-module-eval-source-map' : 'source-map',
   
   devServer: {
-    // contentBase: path.resolve('dist'),
+    contentBase: path.resolve('/'),
     overlay: {
       warnings: false,
       errors: true
