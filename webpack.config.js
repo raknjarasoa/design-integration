@@ -123,13 +123,9 @@ let config = {
           }
         ]
       },
-      /*{
-        test: /\.pug$/,
-        use:  ['html-loader', 'pug-html-loader?pretty&exports=false']
-      },*/
       {
         test: /\.pug$/,
-        use: ['pug-loader']
+        use: ['pug-loader'] // html-loader
       },
       {
         test: /\.pug$/,
