@@ -1,5 +1,7 @@
-import Tmpl from './components/_template';
+import UserStore from './components/_template';
 
-let a = new Tmpl();
+if (module.hot) {
+  module.hot.accept();
+}
 
-console.log('test, a', a);
+console.log('KAIZKAIZ', UserStore);
