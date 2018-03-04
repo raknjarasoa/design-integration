@@ -50,9 +50,8 @@ let config = {
     path: path.resolve(CONFS.BUILD_TARGET),
     // récupère le nom donné en entrée, par défaut bundle.js
     filename: DEV ? '[name].js' : '[name].[chunkhash].js',
-    // To-do publicPath: CONFS.BUILD_TARGET
-    publicPath: './'
-  },
+    publicPath: 'dist/'
+  },  
 
   resolve: {
     alias: {
@@ -139,8 +138,9 @@ let config = {
       disable: DEV
     }),
     new HtmlWebpackPlugin({
-      inject   : true,
-      template: './app/views/index.pug'
+      // To-do: Comment to serve index.html
+      /*inject   : true,
+      template: './app/views/index.pug'*/
     }),
     new StyleLintPlugin()
   ],
@@ -150,15 +150,15 @@ let config = {
   devtool: DEV ? 'cheap-module-eval-source-map' : 'source-map',
   
   devServer: {
-    contentBase: path.resolve('dist'),
-    // affiche les erreurs en overlay dans le navigateur
+    // contentBase: path.resolve('dist'),
     overlay: {
-      warnings: true,
+      warnings: false,
       errors: true
     },
     open: true,
     // https: true,
     port: 3000,
+    hotOnly: true,
     watchContentBase: true, // File changes will trigger a full page reload.
     /*setup(app){
       app.get('/some/path', function(req, res) {
