@@ -40,11 +40,13 @@ if (!DEV) {
 
 let config = {
   entry: {
+    index: './app/views/index.pug',
     app: [
       CONFS.SCSS_SRC,
       CONFS.JS_SRC,
       ...pugs
-    ]
+    ],
+    // vendor: []
   },
 
   output: {
@@ -121,7 +123,10 @@ let config = {
           }
         ]
       },
-      // html-loader
+      /*{
+        test: /\.pug$/,
+        use:  ['html-loader', 'pug-html-loader?pretty&exports=false']
+      },*/
       {
         test: /\.pug$/,
         use: ['pug-loader']
@@ -141,10 +146,13 @@ let config = {
       disable: DEV
     }),
     new HtmlWebpackPlugin({
-      inject   : true,
       title: 'index.html',
       template: './app/views/index.pug'
     }),
+    /*new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: Infinity,
+    }),*/
     new StyleLintPlugin()
   ],
 
@@ -161,7 +169,7 @@ let config = {
     open: true,
     // https: true,
     port: 3000,
-    hotOnly: true,
+    hot: true,
     watchContentBase: true, // File changes will trigger a full page reload.
     /*setup(app){
       app.get('/some/path', function(req, res) {
