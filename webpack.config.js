@@ -146,7 +146,7 @@ let config = {
     open: true,
     https: true,
     compress: true,
-    progress: true,
+    // progress: true,
     port: 3000,
     hot: true,
     watchContentBase: true, // File changes will trigger a full page reload.
